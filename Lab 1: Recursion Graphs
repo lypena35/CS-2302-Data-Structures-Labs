@@ -1,0 +1,276 @@
+package Pena_Lorianne_Lab1;
+
+/**
+ * Created by LoriPena on 1/23/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 1
+ */
+import java.util.Scanner;
+
+/*************************************************************************
+ Programmed by Olac Fuentes
+ Last modified January 8, 2018
+ **************************************************************************/
+
+public class four_squares {
+    public static void draw_squares(int n, double x, double y, double rad) {
+        if (n > 0) {
+            StdDraw1.line (x - rad, y - rad, x - rad, y + rad);
+            StdDraw1.line (x - rad, y + rad, x + rad, y + rad);
+            StdDraw1.line (x + rad, y + rad, x + rad, y - rad);
+            StdDraw1.line (x + rad, y - rad, x - rad, y - rad);
+
+            draw_squares (n - 1, x - rad, y - rad, rad / 2);
+            draw_squares (n - 1, x - rad, y + rad, rad / 2);
+            draw_squares (n - 1, x + rad, y - rad, rad / 2);
+            draw_squares (n - 1, x + rad, y + rad, rad / 2);
+
+        }
+    }
+
+    /**
+     * This method is to re-create the circle in method 1 that progressively gets smaller toward the center.
+     *
+     * @param n         the number of times the method will recurse.
+     * @param x         the x-axis of the drawing, which moves the shape horizontally.
+     * @param y         the y-axis of the drawing, which moves the shape vertically.
+     * @param rad       is the radius of the drawing/shape.
+     * @param modifyRad the variable that modifies the radius based on a set percentage required to modify the drawing.
+     */
+    public static void circleMethod1(int n, double x, double y, double rad, double modifyRad) {
+        if (n > 0) {
+            StdDraw1.circle (x, y, rad);
+
+            circleMethod1 (n - 1, x, y, rad * modifyRad, modifyRad);
+        }
+    }
+
+    /**
+     * This method is to replicate the second circle in the list of methods for lab 1. The circles get progressively
+     * smaller at the furthest center point on the circles left side.
+     *
+     * @param n         is the number of times the method will recurse to create the image.
+     * @param x         is the x-axis point of the drawing in which moves the shape horizontally.
+     * @param y         is the y-axis point of the drawing in which moves the shape vertically.
+     * @param rad       is the radius of the drawing/shape.
+     * @param modifyRad is the variable used to modify the radius based on set percentage we want to modify.
+     */
+    public static void circleMethod2(int n, double x, double y, double rad, double modifyRad) {
+        if (n > 0) {
+            StdDraw1.circle (x, y, rad);
+
+            circleMethod2 (n - 1, x * modifyRad, y, rad * modifyRad, modifyRad);
+        }
+    }
+
+    /**
+     * This method is to create the rotating square pattern in method 3.
+     *
+     * @param n         is the number of times the method will recurse to create the necessary design.
+     * @param x         is the x-axis we can modify to move the shape horizontally.
+     * @param y         is the y-axis we can modify to move the shape vertically.
+     * @param rad       is the radius of the drawing/shape.
+     * @param modifyRad is the variable used to modify the radius based on the set percentage we want to modify.
+     */
+    public static void squareMethod3(int n, double x, double y, double rad, double modifyRad) {
+
+        if (n > 0) {
+            StdDraw1.squareWithRotation (x, y, rad);
+
+            squareMethod3 (n - 1, x, y, rad * modifyRad, modifyRad);
+        }
+    }
+
+    /**
+     * This method is to create the tree structure in method 4.
+     *
+     * @param n       is the number of times we want to recurse.
+     * @param x       is the x-axis we can modify to make the shape move horizontally.
+     * @param y       is the y-axis we can modify to make the shape move vertically.
+     * @param deltaX  is the variable we use to show the changes made in the x axis to form the tree.
+     * @param deltaY  is the variable we use to show the changes made in the y axis to form the tree.
+     * @param modifyY is the variable used to modify the deltaY variable in the recursive call so that our tree
+     *                continues to recurse and show all of the tree in the designated space given.
+     */
+    public static void lineMethod4(int n, double x, double y, double deltaX, double deltaY, double modifyY) {
+        if (n > 0) {
+            StdDraw1.line (x, y, x - deltaX, y - deltaY);//left side
+            StdDraw1.line (x, y, x + deltaX, y - deltaY);//right side
+
+            lineMethod4 (n - 1, x - deltaX, y - deltaY, deltaX / 2, deltaY * modifyY, modifyY);//left side
+            lineMethod4 (n - 1, x + deltaX, y - deltaY, deltaX / 2, deltaY * modifyY, modifyY);//right side
+
+        }
+    }
+
+    /**
+     * This method is to create the 5th and last method of circles within circles.
+     *
+     * @param n   is the variable used to recurse the shape the number of times necessary to create a pattern.
+     * @param x   is the x-axis we can modify to move the shape horizontally.
+     * @param y   is the y-axis we can modify to move the shape vertically.
+     * @param rad is the radius of the drawing/shape.
+     */
+    public static void circleMethod5(int n, double x, double y, double rad) {
+        if (n > 0) {
+            StdDraw1.circle (x, y, rad);//big circle
+            StdDraw1.circle (x, y, rad / 3);//middle circle
+            StdDraw1.circle (x, y + 2 * (rad / 3), rad / 3);//middle top circle
+            StdDraw1.circle (x + 2 * (rad / 3), y, rad / 3);//middle right circle
+            StdDraw1.circle (x, y - 2 * (rad / 3), rad / 3);//middle bottom circle
+            StdDraw1.circle (x - 2 * (rad / 3), y, rad / 3);//left middle circle
+
+            circleMethod5 (n - 1, x, y, rad);//big circle
+            circleMethod5 (n - 1, x, y, rad / 3);//middle circle
+            circleMethod5 (n - 1, x, y + 2 * (rad / 3), rad / 3);//middle top circle
+            circleMethod5 (n - 1, x + 2 * (rad / 3), y, rad / 3);//middle right circle
+            circleMethod5 (n - 1, x, y - 2 * (rad / 3), rad / 3);//middle bottom circle
+            circleMethod5 (n - 1, x - 2 * (rad / 3), y, rad / 3);//left middle circle
+        }
+    }
+    public static void squareMethodPT(int n,double x, double y, double rad){
+        if(n>0){
+            rad/=2;
+            StdDraw1.line (x - rad, y - rad, x - rad, y + rad);
+            StdDraw1.line (x - rad, y + rad, x + rad, y + rad);
+            StdDraw1.line (x + rad, y + rad, x + rad, y - rad);
+            StdDraw1.line (x + rad, y - rad, x - rad, y - rad);
+
+            squareMethodPT (n-1,x,y,rad);
+
+
+        }
+    }
+
+    public static void circleMethodPT(int n, double x,double y, double rad){
+        if(n>0){
+            StdDraw1.circle (x,y,rad);
+            rad/=2;
+            //circleMethodPT (n-1,x+(rad*modifyRad),y,rad*modifyRad,modifyRad);
+            //circleMethodPT (n-1,x-(rad*modifyRad),y,rad*modifyRad,modifyRad);
+
+            circleMethodPT (n-1,x+rad,y,rad);
+            circleMethodPT (n-1,x-rad,y,rad);
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println ("Hello!");
+        System.out.println ("Please select the drawing/method you wish to view from the following options:");
+        System.out.println ("1. Method 1: Circle with ripple effect. ");
+        System.out.println ("2. Method 2: Circle with ripple effect from left side.");
+        System.out.println ("3. Method 3: Rotating Square");
+        System.out.println ("4. Method 4: Tree Structure");
+        System.out.println ("5. Method 5: Circles within Circles");
+        System.out.println ("6.SQUARE PT " );
+        System.out.println ("7. CIRCLE PT" );
+        System.out.println ("8. The example Dr. Fuentes provided for us (four squares).");
+        System.out.println ("Once you have made your selection, please press enter." );
+        Scanner input = new Scanner (System.in);
+        int option = 0;
+        if (option <= 6) {
+            option = input.nextInt ( );
+            StdDraw1.setXscale (0, 100);
+            StdDraw1.setYscale (0, 100);
+            StdDraw1.setPenColor (StdDraw1.BLACK);
+            switch (option) {
+                case 1:
+                    circleMethod1 (100, 50, 50, 50, .95);
+                    break;
+                case 2:
+                    circleMethod2 (10, 50, 50, 50, .65);
+                    break;
+                case 3:
+                    squareMethod3 (100, 50, 50, 70, .85);
+                    break;
+                case 4:
+                    lineMethod4 (6, 50, 100, 25.7, 33.3, .85);
+                    break;
+                case 5:
+                    circleMethod5 (1, 50, 50, 50);
+                    break;
+                case 6:
+                   squareMethodPT (5, 50, 50, 80);
+                    break;
+                case 7:
+                   circleMethodPT (7, 50, 50, 50);
+                    break;
+                case 8:
+                    draw_squares (7, 50, 50, 50);
+                    break;
+
+                default:
+                    System.out.println ("I am sorry, that is not a option listed. Please, pick from the options listed. ");
+            }
+        }
+
+    }
+}
+
+
+package Pena_Lorianne_Lab1;
+
+/**
+ * Created by LoriPena on 4/20/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab
+ */
+public class squares2 {
+
+    public static void draw_squares(int n, double f, double[] x, double []y) {
+        if (n>0){
+            double g = 1-f;
+            draw_square(x,y);
+
+            for(int i=0;i<x.length-1;i++){
+                x[i] = x[i]*g+ x[i+1]*f;
+                y[i] = y[i]*g+ y[i+1]*f;
+            }
+            x[4]=x[0];
+            y[4]=y[0];
+            draw_squares(n-1, f, x, y);
+        }
+    }
+
+    public static void draw_square(double[] x, double []y) {
+        for(int i=0;i<x.length-1;i++)
+            StdDraw1.line(x[i], y[i], x[i+1], y[i+1]);
+    }
+
+    public static void main(String[] args) {
+        double [] x = {5, 95, 95, 5, 5};
+        double [] y = {5, 5, 95, 95, 5};
+        double f = 0.1;
+
+        StdDraw1.setXscale(0, 100);
+        StdDraw1.setYscale(0, 100);
+        StdDraw1.setPenColor(StdDraw1.BLACK);
+        draw_squares(10, f, x, y);
+    }
+}
+//Used the Stanford StdDraw library 
+/******************************************************************************
+ *  Compilation:  javac StdDraw1.java
+ *  Execution:    java StdDraw1
+ *  Dependencies: none
+ *
+ *  Standard drawing library. This class provides a basic capability for
+ *  creating drawings with your programs. It uses a simple graphics model that
+ *  allows you to create drawings consisting of points, lines, and curves
+ *  in a window on your computer and to save the drawings to a file.
+ *
+ *  Todo
+ *  ----
+ *    -  Add support for gradient fill, etc.
+ *    -  Fix setCanvasSize() so that it can only be called once.
+ *    -  On some systems, drawing a line (or other shape) that extends way
+ *       beyond canvas (e.g., to infinity) dimensions does not get drawn.
+ *
+ *  Remarks
+ *  -------
+ *    -  don't use AffineTransform for rescaling since it inverts
+ *       images and strings
+ *
+ ******************************************************************************/
