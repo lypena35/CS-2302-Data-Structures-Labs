@@ -1,0 +1,175 @@
+import java.util.Scanner;
+
+/**
+ * Created by LoriPena on 4/27/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 8
+ */
+public class Lab8 {
+
+    /**
+     * This method is calculate the sum of the two partitions and whether they can even be partitioned.
+     *
+     * @param mySet the integer array
+     * @param n     the array length
+     * @return true if they can be solved false if they can't
+     */
+    public static boolean isSolution(int[] mySet, int n) {
+        int sumPartitions = 0;
+        for (int i = 0; i < n; i++) {
+            sumPartitions += mySet[i];
+        }
+        if (sumPartitions % 2 != 0) { return false; }//if odd we cannot compute equal sum
+
+        return SubsetSumPartitions (mySet, n, sumPartitions / 2);//if the subset is equal to half the sum
+    }
+
+    /**
+     * This method is the modified subset sum method to check if the two sums of the partition are equal
+     *
+     * @param mySet   the integer array
+     * @param n       the array length
+     * @param sumGoal the sum
+     * @return true if they are and not if they are not a equal partition
+     */
+    public static boolean SubsetSumPartitions(int[] mySet, int n, int sumGoal) {
+        if (sumGoal == 0) { return true; }
+        if ( sumGoal != 0&& n == 0) { return false;}
+        //if the last element is greater we ignore
+        if (mySet[n - 1] > sumGoal) { return SubsetSumPartitions (mySet, n - 1, sumGoal); }
+
+        //we either include the last element or we skip it
+        return SubsetSumPartitions (mySet, n - 1, sumGoal) || SubsetSumPartitions (mySet, n - 1, sumGoal - mySet[n - 1]);
+    }
+
+    /**
+     * This is the method to calculate the f formula
+     *
+     * @param theta double variable theta "angle".
+     * @return the identity
+     */
+    public static double f(double theta) {
+        return Math.sin (theta) / Math.cos (theta);
+    }
+
+    /**
+     * This method is to produce a false reading for the identities
+     *
+     * @param theta the double variable theta "angle"
+     * @return the identity
+     */
+    public static double falsef(double theta) { return Math.cos (theta) / Math.sin (theta); }
+
+    /**
+     * This method is to also produce a false reading for the identities
+     *
+     * @param theta the double variable theta "angle"
+     * @return the identity
+     */
+    public static double falsef1(double theta) { return 1 / Math.tan (theta); }
+
+    /**
+     * This Pythagorean identities is used to also test the identities
+     *
+     * @param theta the double variable theta "angle"
+     * @return
+     */
+    public static double PythagoreanIdent(double theta) {
+        return Math.pow (Math.sin (theta), 2 + Math.pow (Math.cos (theta), 2));
+    }
+
+    /**
+     * This method is to calculate the g formula
+     *
+     * @param theta double variable theta "angle".
+     * @return the identity
+     */
+    public static double g(double theta) {
+        return Math.tan (theta);
+    }
+
+    /**
+     * This is the method to check a different identity formula being Pythagorean
+     *
+     * @param theta the double variable theta "angle"
+     * @return the identity
+     */
+    public static double g1(double theta) { return 1; }
+
+    /**
+     * This method is to give use a false reading for the Pythagorean identity
+     *
+     * @param theta the double variable theta "angle"
+     * @return the identity
+     */
+    public static double falseg2(double theta) { return 0; }
+
+    /**
+     * This method is to check if the two formulas are identities
+     *
+     * @param arr the double array
+     * @return true if they are or false if they are not
+     */
+    public static boolean isEqual(Double[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            double t = arr[i];
+            if (Math.abs (f (t) - g (t)) > 0.00001) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * This method is to generate a random array of doubles from negative pi to pi.
+     *
+     * @param size the size of the random generated array
+     * @return the new array
+     */
+    public static Double[] randGenerator(int size) {
+        Double min = -Math.PI;
+        Double max = Math.PI;
+        Double[] newArray = new Double[size];
+        if (size > 0) {
+            for (int i = 0; i < newArray.length; i++) {
+                newArray[i] = Math.random ( ) * (max - min) + min;
+            }
+        }
+        return newArray;
+    }
+
+    public static void main(String[] args) {
+        Scanner input = new Scanner (System.in);
+        int option = 0;
+        System.out.println ("Hello: Please enter 1 for the first question, and enter 2 for the second question.");
+        if (option <= 2) {
+            option = input.nextInt ( );
+            switch (option) {
+                case 1:
+                    int array[] = {3, 1, 5, 9, 12};//can
+                    int array1[] = {7, 6, 5};//cannot
+                    int array2[] = {3, 1, 1, 2, 2, 1};//can
+                    boolean result = isSolution (array, array.length);
+                    if (result) {
+                        System.out.println ("True: can be divided into two subsets.");
+                    } else {
+                        System.out.println ("False: can't be divided into subsets");
+                    }
+                    break;
+                case 2:
+                    int size = 10;
+                    Double[] arr = new Double[size];
+                    for (int i = 0; i < arr.length; i++) {
+                        arr = randGenerator (size);
+                        System.out.println (arr[i]);
+                        System.out.println (isEqual (arr));
+                    }
+                    break;
+                default:
+                    System.out.println ("Error: you entered a invalid input.");
+            }
+
+        }
+    }
+}
