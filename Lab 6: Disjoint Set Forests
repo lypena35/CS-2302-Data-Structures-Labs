@@ -1,0 +1,592 @@
+package Pena_Lorianne_Lab6;
+
+/**
+ * Created by LoriPena on 4/5/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 6
+ */
+public class DSF {
+    private int[] S;
+
+    public int[] getS() {
+        return this.S;
+    }
+    public DSF(int n) { /* Initialize disjoint set forest with n elements.
+Each element is a root */
+        S = new int[n];
+        for (int i = 0; i < n; i++)
+            S[i] = -1;
+    }
+
+    public int find_c(int i) { // Find with path compression
+        if (S[i] < 0)
+            return i;
+        return S[i] = find_c (S[i]);
+    }
+    public int union_c(int i, int j) { //Union with path compression
+        int ri = find_c(i);
+        int rj = find_c(j);
+
+        if(ri == rj)
+            return -1;
+        S[rj] = ri;
+        return 1;
+    }
+
+
+    public int union_by_size(int i, int j) {
+        int ri = find_c (i);
+        int rj = find_c (j);
+        if (ri == rj) return -1;
+        if (S[ri] > S[rj]) {
+            S[rj] += S[ri];
+            S[ri] = rj;
+        } else {
+            S[ri] += S[rj];
+            S[rj] = ri;
+        }
+        return 1;
+    }
+
+    public void print() {
+        for (int i = 0; i < S.length; i++)
+            System.out.print (S[i] + " ");
+        System.out.println ( );
+    }
+    }
+
+
+    public class DSFNode implements Comparable<DSFNode> {// this object is used to compare the words with the indices
+        int position;//v
+        int size;//i
+
+        public DSFNode(int v, int i) {
+            this.position = v;
+            this.size = i;
+        }
+        public int getSize(){
+            return this.size;
+        }
+    public int getPosition() { return this.position; }
+    public void setSize(int i) {
+        this.size = i;
+    }
+
+
+        @Override
+        public int compareTo(DSFNode o) {
+           //return position - o.position;
+            return Integer.compare (this.size,o.getSize ());
+        }
+    }
+
+public class Heap {
+     /*
+    In class, we used H[0] to store the size of the heap.
+    In this lab, we will ’waste’ H[0], and use the field ’size’ to store the
+    current size of the heap.
+    */
+
+    public HeapNode[] H;
+    public int size;
+
+    public Heap(int capacity) {
+        H = new HeapNode[capacity+1]; //We need to add 1 since we’re ’wasting’ H[0]
+        this.size = 0;
+    }
+    public void print(){
+        System.out.println ("Heap size: "+ size );
+        System.out.println ("HeapArray:" );
+        for(int i = 1; i<= size; i++){
+            System.out.println (" "+ H[i] );
+        }
+        System.out.println ( );
+    }
+
+    /**
+     * This method is used to insert the array words and similarities into a heap
+     *
+     * @param node taking in a node from the heap node
+     */
+    public void insert(HeapNode node) {
+        //Use node.similarity * -1 when inserting ’node’ into the heap.
+        //We have to do this because our heap puts at the top the node with the
+        //smallest position, and we actually want to achieve the opposite.
+        //We want the words with the greatest similarity position to be at the top.
+        //Because of this, you must use node.similarity * -1
+        //as the node’s position when inserting it into the heap.
+        //...
+        //Add new element to heap, maintaining heap property
+        if (size >= H.length - 1) return;//Heap is full
+        size++; //increase heap size
+        int i = size;
+       // System.out.print("size: "+ i);
+        while ((i > 1) && ((node.similarity*-1) < (H[i / 2].similarity*-1))) { //bubble up
+            H[i] = H[i / 2];
+            i = i / 2;
+        }
+        H[i] = node;
+    }
+
+    /**
+     * This method is to extract the minimum element in the heap
+     *
+     * @return the minimum position or heap node
+     */
+    public HeapNode extractMin() {
+        //Use node.similarity * -1 in this method as well.
+        //...
+        //remove and return smallest element in heap,maintaining heap property
+            if (size <= 0) return null;//heap is empty
+            HeapNode minVal = H[1];
+            H[1] = H[size];//move last element to root
+            size--; //Decrease heap size
+            int i = 1;
+            int min = 1;
+            HeapNode temp;
+            while (true) {//percolate down
+                if ((2 * i <= size) && (H[min].similarity * -1 > H[2 * i].similarity * -1)) {
+                    //left child is smaller than parent
+                    min = 2 * i;
+                }
+                if (((2 * i + 1) <= size) && (H[min].similarity * -1 > H[2 * i + 1].similarity * -1)) {
+                    //right child is smallest of siblings and parent
+                    min = 2 * i + 1;
+                }
+                if (min == i) break;//heap order has been re-established
+                temp = H[i];
+                H[i] = H[min];
+                H[min] = temp;
+                i = min;
+            }
+            return minVal;
+        }
+}
+
+public class HeapNode {
+
+    public String word0;
+    public String word1;
+    public double similarity;
+    public HeapNode(String word0, String word1, double similarity) {
+        super();
+        this.word0 = word0;
+        this.word1 = word1;
+        this.similarity = similarity;
+    }
+
+public class sNode {
+    public String word;
+    public double[] embedding;
+    public sNode next;
+
+
+    public sNode(String S, double[] E, sNode N) {
+        word = S;
+        embedding = new double[50];
+        for (int i = 0; i < 50; i++)
+            embedding[i] = E[i];
+        next = N;
+    }
+}
+
+public class hashTableStr {
+
+    public sNode[] H;
+
+    public hashTableStr(int n) { // Initialize all lists to null. Given to us by Professor Aguirre
+        H = new sNode[n];
+        for (int i = 0; i < n; i++) {
+            H[i] = null;
+        }
+
+    }
+    public sNode[] getH(){return H;}
+    /**
+     * This is the method inserts the linked list nodes and data into the hash table also doubles
+     * the size of the load factor once it becomes greater then the desired load size.
+     *
+     * @param s is the linked list node
+     */
+    public void insert(sNode s) {//insertion
+        try {
+            float loadFactor = load_factor ( );
+            if (loadFactor >=2) doubleSize ( );//double the size of load factor if it reaches greater
+            int position = h (s.word);
+            s.next = H[position];
+            H[position] = s;
+            //System.out.println (load_factor () );
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        }
+    }
+
+    /**
+     * This method is creating the array part of the hash table
+     *
+     * @param array is the string array needed to create the array part of the hash
+     * @return we return a array ready to take in linked list and start at null
+     */
+    public static sNode getArray(String[] array) {//create Snode
+
+        double[] newDouble = new double[50];
+        for (int i = 1; i < array.length; i++) {
+            newDouble[i - 1] = Double.parseDouble (array[i]);
+        }
+        return new sNode (array[0], newDouble, null);//nodes
+    }
+
+    /**
+     * This method is our hash function that was given to us by Professor Aguirre to use for this lab.
+     * @param S the string of words
+     * @return the size of the hash table
+     */
+    public int h(String S) {
+        int h = 0;
+        for (int i = 0; i < S.length ( ); i++)
+            h = (h * 27 + S.charAt (i)) % H.length;
+        //System.out.println ("THis is h:" + h );
+        return h;
+    }
+
+
+    /**
+     * This method is used to get the load factor of the hash table in order to decide when the table is to
+     * full and should increase the size of the table
+     *
+     * @return the number of the load factor to use for insert method
+     */
+    public float load_factor() {//computes the load factor
+        int count = 0;
+        for (int i = 0; i < H.length; i++) {
+            for (sNode t = H[i]; t != null; t = t.next) {
+                count++;
+            }
+        }
+        return (float) count / H.length;
+    }
+
+    /**
+     * This method is used to double the size of the table once the load factor reaches full
+     * capacity. Also used in the insert method.
+     */
+    public void doubleSize() {//doubling the size of the load factor
+
+        hashTableStr doubleHash= new hashTableStr ((H.length*2)+1);
+        for (int i = 0; i <doubleHash. H.length; i++) {
+           sNode temp = doubleHash.H[i];
+           while (temp!=null){
+               doubleHash.insert (temp);
+               temp=temp.next;
+           }
+        }
+        H=doubleHash.H;
+    }
+
+
+    /**
+     * This method is to search through the hash table and linked lists. Used for the simplicity method.
+     *
+     * @param k takes in a string k which is the position or word size in the hash array
+     * @return returns the size or in this case the string word or null if the list is empty
+     */
+    public sNode search(String k) {//searching through the hash table
+        int pos = h (k);
+        for (sNode t = H[pos]; t != null; t = t.next)
+            if (k.equals (t.word))
+                return t;
+        return null;
+    }
+}
+package Pena_Lorianne_Lab6;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+/**
+ * Created by LoriPena on 4/5/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 6
+ */
+public class Lab6Main {
+    public static Heap heap;
+    public static int totalNumVariable;
+
+
+    /**
+     * This method is to read the glove.6B.50d.txt file or the test.txt files
+     *
+     * @param fileName takes in the name of the file
+     * @param h        and the hash table
+     */
+    public static void fileReader(String fileName, hashTableStr h) {
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader (fileName);//reading text files
+            BufferedReader bufferedReader = new BufferedReader (fileReader);//wrapping file reader in a buffer reader
+            while ((line = bufferedReader.readLine ( )) != null) {
+               // System.out.println (line);//reading line by line
+                String[] newArray = line.split (" "); //splitting the word and numbers from the string
+                sNode current = h.getArray (newArray);//creating a new hash array
+                h.insert (current);//inserting values into the hash table
+            }
+            bufferedReader.close ( );
+        } catch (FileNotFoundException e) {
+            System.out.println (
+                    "Unable to open file '" + fileName + "'");
+        } catch (IOException e) {
+            System.out.println (
+                    "ERROR: reading file '" + fileName + "'");
+
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+        }
+    }
+
+    /**
+     * This method is to read the lab6Words.txt file for method number 2
+     *
+     * @param fileName name of the file
+     * @param h        the hash table
+     */
+    public static String[] words(String fileName, hashTableStr h) {
+        String line;
+        int count = 0;
+        int i = 0;
+
+        try {
+            FileReader fileReader = new FileReader (fileName);
+            BufferedReader bufferedReader = new BufferedReader (fileReader);
+
+            while ((line = bufferedReader.readLine ( )) != null) {//reading pair file
+                count++;
+
+            }
+            String[] newArray = new String[count];
+            heap = new Heap (count);//capacity initialized
+            FileReader file = new FileReader (fileName);
+            BufferedReader buff = new BufferedReader (file);
+            while ((line = buff.readLine ( )) != null) {//reading line by line
+                newArray[i] = line;
+                i++;
+            }
+            bufferedReader.close ( );
+            buff.close ( );
+
+            return newArray;
+        } catch (FileNotFoundException e) {
+            System.out.println (
+                    "Unable to open file: '" + fileName + "'");
+        } catch (IOException e) {
+            System.out.println (
+                    "ERROR: reading file '" + fileName + "'");
+        } catch (NullPointerException e) {
+            System.out.println ("abcERROR: null pointer exception try new length for hash table test.");
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+        }
+        return null;
+    }
+
+    /**
+     * This method is to convert the string array taken from the file reader methods and adding them into a hash table
+     * and get the similarity of the words and adds them in a heap
+     *
+     * @param str the string array taken from the file reader/buffer reader
+     * @param h   is the hash table that stores the
+    */
+    public static void stringToHeap(String[] str, hashTableStr h) {
+        //System.out.println ("this length:"+ str.length );
+        for (int i = 0; i < str.length-1; i++) {
+            for (int j = i +1; j < str.length; j++) {
+                double similarity = similarity (str[i], str[j], h);
+                HeapNode current = new HeapNode (str[i], str[j], similarity);
+                heap.insert (current);
+                totalNumVariable++;
+                // System.out.println ("Total variable size:"+heap.size );
+            }
+        }
+    }
+    /**
+     * This method is to get the size of the heap
+     * @param s the size of the heap
+     * @return the size of the heap
+     */
+    public static int getSizeOfHeap(String[] s){
+      return s.length;
+     }
+
+    /**
+     * This method is to help calculate the similarity of the words
+     *
+     * @param str1 is the first word
+     * @param str2 is the second word
+     * @param h    is the hash table
+     * @return the result of calculating this cosine distance
+     */
+    public static double similarity(String str1, String str2, hashTableStr h) {//getting the similarity
+        try {
+            sNode a = h.search (str1);// e0 embedding
+            sNode b = h.search (str2);//e1 embedding
+            double dotProd = getDotProduct (a.embedding, b.embedding);//getting the dot product
+            double getMag = getMagnitude (a.embedding) * getMagnitude (b.embedding);//getting the magnitude
+            double result = dotProd / getMag;//then dividing them to get the similarity of the word
+            return result;
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: similarity null pointer exception try new length for hash table test.");
+            return -1;
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+            return -1;
+        }
+    }
+
+    /**
+     * This method is to get the dot product for number 2 equation the cosine distance.
+     *
+     * @param a the array of double e0
+     * @param b the array of double e1
+     * @return returns the sum of the two arrays
+     */
+    public static double getDotProduct(double[] a, double[] b) {//getting the dot product
+        double sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += a[i] * b[i];
+        }
+        return sum;
+    }
+
+    /**
+     * This method is to get the bottom half of the cosine distance formula.
+     *
+     * @param a the array of double
+     * @return the absolute position of the sum of the double array
+     */
+    public static double getMagnitude(double[] a) {//getting the magnitude
+        float sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += Math.pow (a[i], 2);
+        }
+        return (float) Math.sqrt (sum);//square root of sum
+    }
+
+    /**
+     * This method is to help us create our forest as we extract the minimum element in the heap
+     *
+     * @param str    is the array of strings
+     * @param forest is our disjointed set
+     */
+    public static void createUnion(String[] str, DSF forest, int n) {
+        for (int i = 0; i < n; i++) {
+            HeapNode store = heap.extractMin ( );
+            System.out.println ("similarity" + store.similarity);
+            int word1 = getIndex (str, store.word0);
+            int word2 = getIndex (str, store.word1);
+            forest.union_by_size (word1, word2);
+            System.out.println ("This is word1:" + store.word0 + " " + "This is word2:" + store.word1);
+
+        }
+    }
+
+    /**
+     * This method is used to get the size of the string to aid in creating the union method.
+     *
+     * @param str  the array of words
+     * @param word the word
+     * @return the word inside the array or -1 if its a root
+     */
+    public static int getIndex(String[] str, String word) {
+        for (int i = 0; i < str.length; i++) {
+            if (word.equals (str[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    /**
+     * This method is suppose to answer number 6 in lab 6 finding the largest clusters and printing the words
+     * in those largest clusters.
+     *
+     * @param str    is the string array with words
+     * @param forest is the disjointed set forest
+     * @param m      the variable that can be easily tweaked
+     */
+    public static void printLargest(String[] str, DSF forest, int m) {
+        ArrayList<DSFNode> newArrayL = new ArrayList<> ( );
+        for (int i = 0; i < str.length; i++) {
+            int temp = forest.getS ( )[i];
+            if (temp <= -1) {
+                newArrayL.add (new DSFNode (i, temp));
+            } else {
+                forest.union_c (temp, i);
+            }
+        }
+        Collections.sort (newArrayL);
+
+        if (m > newArrayL.size ( ) || m < 0) {
+            System.out.println ("Error: Invalid input, Please try a new position. ");
+        }
+        for (int i = 0; i < m; i++) {
+            System.out.println ("Largest set number " + (i + 1) + " contains " + newArrayL.get (i).getSize ( ) * -1 + " elements.");
+            System.out.println (str[newArrayL.get (i).getPosition ( )] + " ");
+            int count = 0;
+
+            while (newArrayL.get (i).getSize ( ) < -1) {
+                if (forest.getS ( )[count] == newArrayL.get (i).getPosition ( )) {
+                    System.out.println (str[count] + " ");
+                    newArrayL.get (i).setSize (newArrayL.get (i).getSize ( ) +1);
+                }
+                count++;
+            }
+        }
+
+    }
+
+    public static void main(String[] args) {
+        try {
+            int minOutput;
+            int clusters;
+
+            System.out.println ("Hello.");
+            Scanner input = new Scanner (System.in);
+            hashTableStr test = new hashTableStr (23);//5 with test2
+            // System.out.println ( test.hash ("Hello") );
+            fileReader ("test2.txt", test);
+            String[] store = (words ("pair3.txt", test));
+            heap = new Heap (getSizeOfHeap (store));
+            stringToHeap (store, test);
+            System.out.println ("Please enter how many min extracts you would like to do?");
+            minOutput = input.nextInt ( );
+            System.out.println ("Word Similarities:");
+            DSF forest = new DSF (store.length);
+            createUnion (store, forest, minOutput);
+            forest.print ( );
+            System.out.println ("Please enter how many clusters would you like to do?");
+            clusters = input.nextInt ( );
+            printLargest (store, forest, clusters);
+            System.out.println ("-----------");
+
+            // System.out.println ("this is k:"+getSizeOfHeap (store.length) );
+            //System.out.println ("This total"+totalNumVariable );
+
+        }catch (IndexOutOfBoundsException e){
+            System.out.println("Index out of Bounds: Please enter a valid number. ");
+
+        }catch (InputMismatchException e){
+            System.out.println ("Input mismatch: Please enter a valid number." );
+        }catch (NullPointerException e){
+            System.out.println ("Null pointer: exception please add a valid number." );
+        }
+    }
+}
+
+
+
+
