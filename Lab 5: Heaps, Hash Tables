@@ -1,0 +1,556 @@
+package Pena_Lorianne_Lab5;
+
+/**
+ * Created by LoriPena on 3/24/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 5
+ */
+public class hashTableStrings {
+    private sNode[] H;
+
+    public hashTableStrings(int n) { // Initialize all lists to null
+        H = new sNode[n];
+        for (int i = 0; i < n; i++) {
+            H[i] = null;
+        }
+    }
+
+
+    /**
+     * This method is to get the length of the hash table
+     *
+     * @return the length of the hash table
+     */
+    public int getLength() {
+        return H.length;
+    }
+
+    /**
+     * This is the method inserts the linked list nodes and data into the hash table also doubles
+     * the size of the load factor once it becomes greater then the desired load size.
+     *
+     * @param s is the linked list node
+     */
+    public void insert(sNode s) {//insertion
+        try {
+            float loadFactor = load_factor ( );
+            if (loadFactor >= 2) doubleSize ( );//6 is lowest double the size of load factor if it reaches greater
+            int position = hash (s.word);//hash
+            s.next = H[position];
+            H[position] = s;
+            //System.out.println (load_factor () );
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        }
+    }
+
+    /**
+     * This method is creating the array part of the hash table
+     *
+     * @param array is the string array needed to create the array part of the hash
+     * @return we return a array ready to take in linked list and start at null
+     */
+    public static sNode getArray(String[] array) {//create Snode
+
+        float[] newFloat = new float[50];
+        for (int i = 1; i < array.length; i++) {
+            newFloat[i - 1] = Float.parseFloat (array[i]);
+        }
+        return new sNode (array[0], newFloat, null);//nodes
+    }
+
+    /**
+     * This method is to create the actual hash table from the strings given to us in the file
+     *
+     * @param str this is the strings passed from the file
+     * @return the mod operation to decide where to put the value in what index of the array
+     */
+    public int hash(String str) {//creating the actual hash table
+        char[] strToChar = str.toCharArray ( );
+        int result = 0;
+        for (int i = 0; i < strToChar.length; i++) {
+            result += Character.getNumericValue (strToChar[i]);//using numeric value of the words to index
+        }
+        // System.out.println (Math.abs (result%H.length) );
+        return Math.abs (result % H.length);//get rid of negatives
+    }
+
+    private int h(String S) {
+        int h = 0;
+        for (int i = 0; i < S.length ( ); i++)
+            h = (h * 27 + S.charAt (i)) % H.length;
+        return h;
+    }
+
+    /**
+     * This method is used to get the load factor of the hash table in order to decide when the table is to
+     * full and should increase the size of the table
+     *
+     * @return the number of the load factor to use for insert method
+     */
+    public float load_factor() {//computes the load factor
+        int count = 0;
+        for (int i = 0; i < H.length; i++) {
+            for (sNode t = H[i]; t != null; t = t.next) {
+                count++;
+            }
+        }
+        return (float) count / H.length;
+    }
+
+    /**
+     * This method is used to double the size of the table once the load factor reaches full
+     * capacity. Also used in the insert method.
+     */
+    public void doubleSize() {//doubling the size of the load factor
+        sNode[] doubleHash = new sNode[(H.length * 2) + 1];
+        for (int i = 0; i < H.length; i++) {
+            doubleHash[i] = H[i];
+        }
+        for (int i = H.length; i < doubleHash.length; i++) {
+            doubleHash[i] = null;
+        }
+        H = doubleHash;
+    }
+
+    /**
+     * This method is used to get the number of empty (linked)lists in the hash table
+     *
+     * @return the number of empty (linked) lists in the hash table in a percent format
+     */
+    public float numOfLists() {//getting the number of lists in the hash
+        int count = 0;
+        for (int i = 0; i < H.length; i++) {
+            if (H[i] == null) {
+                count++;
+            }
+        }
+        return (float) (count * 10.00) / H.length;
+    }
+
+    /**
+     * This method is to search through the hash table and linked lists. Used for the simplicity method.
+     *
+     * @param k takes in a string k which is the position or word index in the hash array
+     * @return returns the index or in this case the string word or null if the list is empty
+     */
+    public sNode search(String k) {//searching through the hash table
+        int pos = hash (k);//hash
+        for (sNode t = H[pos]; t != null; t = t.next)
+            if (k.equals (t.word))
+                return t;
+        return null;
+    }
+
+    /**
+     * This method is to get the mean of the hash table for the standard deviation formula/method
+     *
+     * @return the mean of the table
+     */
+    public int getMean() {//getting the mean for the standard deviation
+        int sum = 0;
+        int length;
+        for (int i = 0; i < H.length; i++) {
+            length = 0;
+            for (sNode temp = H[i]; temp != null; temp = temp.next) {
+                length++;
+            }
+            sum += length;
+        }
+        return sum / H.length;
+    }
+
+    /**
+     * This method is to calculate the standard deviation of the table
+     *
+     * @param h is the hash table
+     * @return the standard deviation in a float format.
+     */
+    public float standardDeviation(hashTableStrings h) {//getting standard deviation
+        double getLength = h.getLengthOfList ( );
+        double getMean = h.getMean ( );
+        double hashValue = (Math.pow (getLength - getMean, 2));
+        double bottom = (h.getLength ( ) - 1);
+        return (float) Math.sqrt (hashValue / bottom);
+
+    }
+
+    /**
+     * This method is to get the length of the list for the standard deviation formula
+     *
+     * @return the length of the list
+     */
+    public int getLengthOfList() { //getting the length of the list
+        int count;
+        int result = 0;
+        for (int i = 0; i < H.length; i++) {
+            count = 0;
+            for (sNode t = H[i]; t != null; t = t.next) {
+                count++;
+            }
+            result += count - getMean ( );
+        }
+        return result;
+    }
+}
+
+package Pena_Lorianne_Lab5;
+
+/**
+ * Created by LoriPena on 3/24/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 5
+ */
+public class heap {
+    public int[] GlobalHeapArray;// contains size
+
+    public heap(int n) {
+        GlobalHeapArray = new int[n];
+        GlobalHeapArray[0] = 0;
+    }
+
+    /**
+     * This method is to print the heap array
+     */
+    public void print() {
+        System.out.println ("Heap size: " + GlobalHeapArray[0]);
+        System.out.println ("GlobalHeapArray:");
+        for (int i = 1; i <= GlobalHeapArray[0]; i++) {
+            System.out.println (" " + GlobalHeapArray[i]);
+        }
+        System.out.println ( );
+    }
+
+    /**
+     * This is the method given to us by Dr. Fuentes to insert elements into the heap.
+     * @param k new element to maintain heap priority
+     * @return the element we are adding to the heap
+     */
+    public int insert(int k) { //Add new element to heap, maintaining heap property
+        if (GlobalHeapArray[0] >= GlobalHeapArray.length - 1) return -1;//Heap is full
+        GlobalHeapArray[0]++; //increase heap size
+        int i = GlobalHeapArray[0];
+        while ((i > 1) && (k < GlobalHeapArray[i / 2])) { //bubble up
+            GlobalHeapArray[i] = GlobalHeapArray[i / 2];
+            i = i / 2;
+        }
+        GlobalHeapArray[i] = k;
+        return i;
+    }
+
+    /**
+     * This method was given to us by Dr. Fuentes to perform the extract minimum operation on our heap.
+     * @return the minimum value
+     */
+    public int extractMin() {
+        //remove and return smallest element in heap,maintaining heap property
+        if (GlobalHeapArray[0] <= 0) return -1;//heap is empty
+        int minVal = GlobalHeapArray[1];
+        GlobalHeapArray[1] = GlobalHeapArray[GlobalHeapArray[0]];//move last element to root
+        GlobalHeapArray[0]--; //Decrease heap size
+        int i = 1;
+        int min = 1;
+        int temp;
+        while (true) {//percolate down
+            if ((2 * i <= GlobalHeapArray[0]) && (GlobalHeapArray[min] > GlobalHeapArray[2 * i])) {
+                //left child is smaller than parent
+                min = 2 * i;
+            }
+            if (((2 * i + 1) <= GlobalHeapArray[0]) && (GlobalHeapArray[min] > GlobalHeapArray[2 * i + 1])) {
+                //right child is smallest of siblings and parent
+                min = 2 * i + 1;
+            }
+            if (min == i) break;//heap order has been re-established
+            temp = GlobalHeapArray[i];
+            GlobalHeapArray[i] = GlobalHeapArray[min];
+            GlobalHeapArray[min] = temp;
+            i = min;
+        }
+        return minVal;
+    }
+}
+
+package Pena_Lorianne_Lab5;
+
+import java.util.Scanner;
+
+/**
+ * Created by LoriPena on 3/24/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 5
+ */
+public class heapSort {
+    /**
+     * This is the method to get the height of the heap needed to draw the tree.
+     * @param heap is the heap array we need to pass to calculate the height
+     * @return the height of the heap
+     */
+    public static int getHeight(heap heap) {
+        int height;
+        height = (int) Math.sqrt (heap.GlobalHeapArray[0]) + 1;
+        return height;
+    }
+
+    /**
+     * This method is to draw the heap, based off of our binary search tree method that was given to us by Dr.Fuentes
+     * @param Heap is the integer array for the heap
+     * @param i is to keep track of the index of the heap array
+     * @param x0 the left furthest point on the x axis
+     * @param x1 the right furthest point in the x axis
+     * @param y  the y axis coordinate
+     * @param y_inc how much we have to increment of the y axis coordinate
+     */
+
+    public static void draw_Heap(int[] Heap, int i, double x0, double x1, double y, double y_inc) {
+
+        double xm = (x0 + x1) / 2;
+        double yn = y - y_inc;
+
+        if (Heap[0] >= 2 * i) {//left nodes
+            StdDraw3.line (xm, y, (x0 + xm) / 2, yn);
+            draw_Heap (Heap, 2 * i, x0, xm, yn, y_inc);
+        }
+
+        if (Heap[0] >= 2 * i + 1) {//right nodes
+            StdDraw3.line (xm, y, (x1 + xm) / 2, yn);
+            draw_Heap (Heap, 2 * i + 1, xm, x1, yn, y_inc);
+        }
+
+        StdDraw3.setPenColor (StdDraw3.WHITE);
+        StdDraw3.filledCircle (xm, y, 3);
+        StdDraw3.setPenColor (StdDraw3.BLACK);
+        StdDraw3.circle (xm, y, 3);
+        StdDraw3.text (xm, y, Integer.toString (Heap[i]));
+
+
+    }
+
+    /**
+     * This method was given to us by Dr. Fuentes from the binary search tree method, this method allows us to see
+     * how the B-tree is built step by step.
+     */
+    public static void pause() {
+        Scanner s = new Scanner (System.in);
+        System.out.println ("Press enter to continue.....");
+        s.nextLine ( );
+        StdDraw3.clear ( );
+    }
+
+    public static void main(String[] args) {
+        int x_max = 100;
+        int y_max = 100;
+        StdDraw3.setXscale (0, x_max);
+        StdDraw3.setYscale (0, y_max);
+        StdDraw3.setPenColor (StdDraw3.BLACK);
+
+        heap HeapObjMain = new heap (50);
+        int[] S = {12, 25, 5, 29, 20, 1, 4, 15, 28};
+        //int [] A={2,6,1,5,3,8,4};
+        //int[]A={2,6,3,1,7,5,4};
+        int[] B = {10, 9, 8, 11, 4, 3, 1};//no
+        int[] C = {1, 2, 3, 4, 5, 6, 7};//is
+        int[] D = {1, 3, 2, 6, 5, 8, 4};//is a heap
+        //int[] A = {5, 15, 6, 9, 20, 78, 1, 3, 24, 25};
+        int [] A={4,3,7,5,2,8,1,6};
+
+
+        for (int i = 0; i < A.length; i++) {
+            System.out.println ("Inserting " + A[i]);
+            HeapObjMain.insert (A[i]);
+            HeapObjMain.print ( );
+            pause ( );
+            draw_Heap (HeapObjMain.GlobalHeapArray, 1, 0, x_max, y_max - 5, (y_max - 10.0) / getHeight (HeapObjMain));
+        }
+        System.out.println ("EXTRACT MINIMUM." );
+        for (int i = 0; i < A.length; i++) {
+            System.out.println ("Extract Min: "+ A[i] );
+            A[i] = HeapObjMain.extractMin ( );
+            HeapObjMain.print ( );
+            pause ( );
+            draw_Heap (HeapObjMain.GlobalHeapArray, 1, 0, x_max, y_max - 5, (y_max - 10.0) / getHeight (HeapObjMain));
+        }
+        pause ();
+        System.exit (0);
+    }
+}
+package Pena_Lorianne_Lab5;
+
+/**
+ * Created by LoriPena on 3/24/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 5
+ */
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.InputMismatchException;
+
+public class lab5 {
+    /**
+     * This method is to read the glove.6B.50d.txt file or the test.txt files
+     *
+     * @param fileName takes in the name of the file
+     * @param h        and the hash table
+     */
+    public static void fileReader(String fileName, hashTableStrings h) {
+        String line = null;
+        try {
+            FileReader fileReader =
+                    new FileReader (fileName);//reading text files
+            BufferedReader bufferedReader =
+                    new BufferedReader (fileReader);//wrapping file reader in a buffer reader
+            while ((line = bufferedReader.readLine ( )) != null) {
+                System.out.println (line);//reading line by line
+                String[] newArray = line.split (" "); //splitting the word and numbers from the string
+                sNode current = h.getArray (newArray);//creating a new hash array
+                h.insert (current);//inserting values into the hash table
+            }
+            bufferedReader.close ( );
+        } catch (FileNotFoundException e) {
+            System.out.println (
+                    "Unable to open file '" + fileName + "'");
+        } catch (IOException e) {
+            System.out.println (
+                    "ERROR: reading file '" + fileName + "'");
+
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+        }
+    }
+
+    /**
+     * This method is to read the pair.txt file for method number 2
+     *
+     * @param fileName name of the file
+     * @param h        the hash table
+     */
+    public static void pairFile(String fileName, hashTableStrings h) {
+
+        String line = null;
+
+        try {
+            FileReader fileReader =
+                    new FileReader (fileName);
+            BufferedReader bufferedReader =
+                    new BufferedReader (fileReader);
+
+            while ((line = bufferedReader.readLine ( )) != null) {//reading pair file
+                System.out.print (line + " ");//printing the words in the file
+                String[] newArray = line.split (" ");//splitting the words
+                System.out.format ("%7.4f%n", similarity (newArray, h));//getting the similarity of the words and putting it in the hash
+            }
+            bufferedReader.close ( );
+        } catch (FileNotFoundException e) {
+            System.out.println (
+                    "Unable to open file: '" + fileName + "'");
+        } catch (IOException e) {
+            System.out.println (
+                    "ERROR: reading file '" + fileName + "'");
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+        }
+    }
+
+    /**
+     * This method is to calculate the method for the "similarity" of the words
+     *
+     * @param str the array of strings from the file
+     * @param h   the hash table
+     * @return the similarity of the words or -1 of we catch a null pointer exception
+     */
+    public static float similarity(String[] str, hashTableStrings h) {//getting the similarity
+        try {
+            sNode a = h.search (str[0]);// e0 embedding
+            sNode b = h.search (str[1]);//e1 embedding
+            float dotProd = getDotProduct (a.embedding, b.embedding);//getting the dot product
+            float getMag = getMagnitude (a.embedding) * getMagnitude (b.embedding);//getting the magnitude
+            float result = dotProd / getMag;//then dividing them to get the similarity of the word
+            return result;
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+            return -1;
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+            return -1;
+        }
+    }
+
+    /**
+     * This method is to get the dot product for number 2 equation the cosine distance.
+     *
+     * @param a the array of floats e0
+     * @param b the array of floats e1
+     * @return returns the sum of the two arrays
+     */
+    public static float getDotProduct(float[] a, float[] b) {//getting the dot product
+        float sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += a[i] * b[i];
+        }
+        return sum;
+    }
+
+    /**
+     * This method is to get the bottom half of the cosine distance formula.
+     *
+     * @param a the array of floats
+     * @return the absolute value of the sum of the float array
+     */
+    public static float getMagnitude(float[] a) {//getting the magnitude
+        float sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += Math.pow (a[i], 2);
+        }
+        return (float) Math.sqrt (sum);//absolute value of sum
+    }
+
+    public static void main(String[] args) {
+        hashTableStrings test = new hashTableStrings (51);//53 is good output too
+        // System.out.println ( test.hash ("Hello") );
+        fileReader ("test2.txt", test);//testing file for method 1 or test.txt or test2.txt
+        System.out.println ("Word Similarities:");
+        pairFile ("pair.txt", test);//changing n to 5 for hash to get 0 empty lists
+        System.out.println (" ");
+        System.out.println ("Table stats:");
+        System.out.print ("Load Factor: ");
+        System.out.format ("%6.4f%n ", test.load_factor ( ));
+        System.out.print ("Percentage of empty lists: ");
+        System.out.printf ("%.2f", test.numOfLists ( ));
+        System.out.println ( );
+        System.out.print ("Standard deviation of the lengths of the lists: ");
+        System.out.format ("%6.4f%n ", test.standardDeviation (test));
+
+    }
+ }
+ package Pena_Lorianne_Lab5;
+
+/**
+ * Created by LoriPena on 3/24/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 5
+ */
+public class sNode {
+    public String word;
+    public float[] embedding;
+    public sNode next;
+
+    public sNode(String S, float[] E, sNode N) {
+        word = S;
+        embedding = new float[50];
+        for (int i = 0; i < 50; i++) {
+            embedding[i] = E[i];
+        }
+        next = N;
+    }
+}
