@@ -1,0 +1,223 @@
+import java.util.Random;
+
+/**
+ * Created by LoriPena on 2/2/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 2
+ */
+public class Pena_Lorianne_Lab2 {
+    /**
+     * This method is used to build a random array of integers ranging from 0 to m-1.
+     *
+     * @param n is the length of the array
+     * @param m is the range of the numbers that will be used to randomize. Being 0 to m-1.
+     * @return returns the new randomized array.
+     */
+    public static int[] buildArray(int n, int m) {
+        int[] newArray = new int[n];
+        if (n > 0) {
+            Random rand = new Random ( );
+            for (int i = 0; i < newArray.length; i++) {
+                newArray[i] = rand.nextInt (m - 1);
+                System.out.print (newArray[i] + " ");
+            }
+        }
+        return newArray;
+    }
+    /**
+     * This method is the duplicate method provided to us by Dr. Fuentes. Used for testing purposes.
+     *
+     * @param S is the random array
+     * @return is the boolean response of the array. If it does contain duplicates or not.
+     */
+    public static boolean hasDuplicates(int[] S) {
+        boolean duplicates = false;
+        for (int i = 0; i < S.length; i++)
+            for (int j = 0; j < S.length; j++)
+                if (S[i] == S[j] && i != j)
+                    duplicates = true;
+        return duplicates;
+    }
+
+    /**
+     * This is the improved method to check for duplicates that are asked in method 2. This method takes care of the
+     * inefficiencies, such as not stopping once duplicates are found, and checking every pair of elements twice.
+     *
+     * @param S the random integer array
+     * @return a boolean value of true or false, based on finding duplicates or not.
+     */
+    public static boolean improvedDuplicate(int[] S) {
+        for (int i = 0; i < S.length - 1; i++)
+            for (int j = i + 1; j < S.length; j++)
+                if (S[i] == S[j])
+                    return true;
+        return false;
+    }
+
+    /**
+     * This method is to take care of method 3. We use selection sort to sort the randomized array and then check
+     * for duplicates in a single pass through the sorted array.
+     *
+     * @param S the random integer array
+     */
+    public static boolean selectionSort(int[] S) {
+        for (int i = 0; i < S.length - 1; i++) {//find the smallest value in the array
+            int currentMin = S[i];
+            int currentMinIndex = i;
+            for (int j = i + 1; j < S.length; j++) {//finding the next smallest value
+                if (currentMin > S[j]) {
+                    currentMin = S[j];
+                    currentMinIndex = j;
+                }
+            }
+            if (currentMinIndex != i) {//swap
+                int temp = S[currentMinIndex];
+                S[currentMinIndex] = S[i];
+                S[i] = temp;
+            }
+            //System.out.print (S[i] );
+        }
+        for (int k = 0; k < S.length - 1; k++) {//checking for duplicates in one pass
+            if (S[k] == S[k + 1]) {
+                //System.out.println ("The duplicates are:" +S[k]);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method does the checking for duplicates in a single pass and calls the method to sort it. This method is
+     * where the actual sorting begins.
+     *
+     * @param S the randomized integer array
+     */
+    public static boolean quickSort(int[] S) {
+        quickSortHelperMethod (S, 0, S.length - 1);
+        for (int k = 0; k < S.length - 1; k++) {
+            if (S[k] == S[k + 1]) {
+                //System.out.println ("The duplicates are:" + S[k]);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method is used for recursively calling the method to sort. Sorting is taking place before and after the partition
+     *
+     * @param S     is the randomized integer array
+     * @param first the lowest value
+     * @param last  the largest value
+     */
+    public static void quickSortHelperMethod(int[] S, int first, int last) {
+        if (last > first) {
+            int pivotIndex = partition (S, first, last);
+            quickSortHelperMethod (S, first, pivotIndex - 1);//before partition
+            quickSortHelperMethod (S, pivotIndex + 1, last);//after partition
+        }
+    }
+
+    /**
+     * This method takes the highest element as a pivot and places it in the correct position and then proceeds to
+     * place all the smaller elements that are smaller then the pivot to the left and the greater values to the right.
+     *
+     * @param S            is the random integer array.
+     * @param firstElement is the lowest or smallest element
+     * @param lastElement  is the largest or greatest element
+     * @return the smallest or lowest element
+     */
+    public static int partition(int[] S, int firstElement, int lastElement) {
+        int pivot = S[firstElement];//picks the first element as it's pivot
+        int low = firstElement + 1;// keep track of index for searching forwards
+        int high = lastElement;//keeps track of the index for searching backwards
+        while (high > low) {
+            while (low <= high && S[low] <= pivot)//to search forward from left of the pivot
+                low++;
+            while (low <= high && S[high] > pivot)//to search backward from the right side of the pivot
+                high--;
+            if (high > low) {//swap
+                int temp = S[high];
+                S[high] = S[low];
+                S[low] = temp;
+            }
+        }
+        while (high > firstElement && S[high] >= pivot)
+            high--;
+        if (pivot > S[high]) {//swapping for the higher or greater values
+            S[firstElement] = S[high];
+            S[high] = pivot;//placing pivot
+            return high;// new pivots index
+        } else {
+            return firstElement;//pivots original index
+        }
+    }
+
+    /**
+     * This method is taking care of method 5. We have a boolean array and our length m to return if the elements in
+     * the array that has been seen before. Then we determine if there are duplicates in a single pass through the
+     * unsorted array.
+     *
+     * @param S is the random unsorted integer array.
+     * @param m is the length of the array
+     * @return a boolean value if the elements in the array have been seen before.
+     */
+    public static boolean hasBeenSeenBefore(int[] S, int m) {
+        boolean[] booArray = new boolean[m];
+        for (int i = 0; i < S.length; i++) {
+            if (booArray[S[i]]) {
+                return true;
+            }
+            booArray[S[i]] = true;
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        try {
+            int[] s = {1, 2, 3, 2, 4, 5, 6, 7};
+            int n = 20;//60
+            int m = 10;//50
+            System.out.print ("Randomly Generated Integer Array: ");
+            int[] S = buildArray (n, m);
+            System.out.println (" ");
+
+            long startTime = System.nanoTime ( );
+            System.out.println ("This method checks for duplicates was provided to us by Dr. Fuentes: " + hasDuplicates (S));
+            long elapsedTimeNs = System.nanoTime ( ) - startTime;
+            System.out.println ("This is the time in nano seconds for the provided method: " + elapsedTimeNs);
+            System.out.println (" ");
+
+            long startTime2 = System.nanoTime ( );
+            System.out.println ("This is the boolean value for the improved duplicate method: " + improvedDuplicate (S));
+            long elapsedTimeNs2 = System.nanoTime ( ) - startTime2;
+            System.out.println ("This is the time in nano seconds for the improved method: " + elapsedTimeNs2);
+            System.out.println (" ");
+
+            long startTime3 = System.nanoTime ( );
+            System.out.println ("This is the method that checks if the elements in the array have been seen before: " + hasBeenSeenBefore (S, n));
+            long elapsedTimeNs3 = System.nanoTime ( ) - startTime3;
+            System.out.println ("This is the time in nano seconds for the has been seen before method: " + elapsedTimeNs3);
+            System.out.println (" ");
+
+            long startTime4 = System.nanoTime ( );
+            System.out.print ("This is the selection sort method which also checks for duplicates: ");
+            System.out.println (selectionSort (S));
+            long elapsedTimeNs4 = System.nanoTime ( ) - startTime4;
+            System.out.println ("This is the time in nano seconds for the selection sort method: " + elapsedTimeNs4);
+            System.out.println (" ");
+
+            long startTime5 = System.nanoTime ( );
+            System.out.print ("This is the quick sort method that also checks for duplicates: ");
+            System.out.println (selectionSort (S));
+            long elapsedTimeNs5 = System.nanoTime ( ) - startTime5;
+            System.out.println ("This is the time in nano seconds for the quick sort method: " + elapsedTimeNs5);
+
+        } catch (NegativeArraySizeException e) {
+            System.out.println ("ERROR: This is a negative array size. Please enter non negative array size.");
+        } catch (IllegalArgumentException e) {
+            System.out.println ("ERROR: The bound for the random array must be a positive number.");
+        }
+    }
+}
