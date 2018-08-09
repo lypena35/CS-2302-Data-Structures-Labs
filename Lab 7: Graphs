@@ -1,0 +1,656 @@
+package Pena_Lorianne_Lab7;
+
+/**
+ * Created by LoriPena on 4/17/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class DSF1 {
+
+    public static int[] S;
+
+    /**
+     * This method is just to get the disjoint forest set for use in other classes
+     *
+     * @return the integer array for our forest.
+     */
+    public int[] getS() {
+        return this.S;
+    }
+
+    /**
+     * This method is to create the disjoint forest set
+     *
+     * @param n is the number of elements we want to use.
+     */
+    public DSF1(int n) { /* Initialize disjoint set forest with n elements.
+Each element is a root */
+        S = new int[n];
+        for (int i = 0; i < n; i++)
+            S[i] = -1;
+    }
+
+    /**
+     * find the root of the input integer
+     *
+     * @param i the integer we are looking for the root
+     * @return the root of the integer we are looking for
+     */
+    public static int find(int i) {
+        if (S[i] < 0) {
+            return i;
+        }
+        return find (S[i]);
+    }
+
+    /**
+     * This method is to merge or unite two sets together
+     *
+     * @param i is the integer we want to join
+     * @param j is the integer we want to join with
+     * @return if they where joined or not 0 if they are already join or 1 if they have been joined
+     */
+    public static int union(int i, int j) {
+        int ri = find (i);
+        int rj = find (j);
+        if (ri == rj) return 0;
+        S[rj] = ri;
+        return 1;
+    }
+
+    /**
+     * printing the disjoint forest set
+     */
+    public void print() {
+        for (int i = 0; i < S.length; i++)
+            System.out.print (S[i] + " ");
+        System.out.println ( );
+    }
+}
+
+/**
+ * Created by LoriPena on 4/19/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class DSFNode1 implements Comparable<DSFNode1> {// this object is used to compare the words with the indices
+    int position;//v
+    int size;//i
+
+    public DSFNode1(int v, int i) {
+        this.position = v;
+        this.size = i;
+    }
+
+    public int getSize() {
+        return this.size;
+    }
+
+    public int getPosition() {
+        return this.position;
+    }
+
+    public void setSize(int i) {
+        this.size = i;
+    }
+
+    @Override
+    public int compareTo(DSFNode1 o) {
+        //return position - o.position;
+        return Integer.compare (this.size, o.getSize ( ));
+    }
+}
+package Pena_Lorianne_Lab7;
+
+/**
+ * Created by LoriPena on 4/17/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+
+public class edgeNode {//edge list
+    String source;
+    String dest;
+    double cost;//set to 1 if graph is unweighted
+    edgeNode next;
+
+    public edgeNode(String source, String dest, double cost, edgeNode next) {
+        this.source = source;
+        this.dest = dest;
+        this.cost = cost;
+        this.next = next;
+
+    }
+
+    public edgeNode(String source, String dest, edgeNode next) {
+        this.source = source;
+        this.dest = dest;
+        this.cost = 1;
+        this.next = next;
+    }
+}
+
+
+package Pena_Lorianne_Lab7;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.InputMismatchException;
+
+/**
+ * Created by LoriPena on 4/16/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class FileReader {
+    /**
+     * This method is to read the glove.6B.50d.txt file or the test.txt files
+     *
+     * @param fileName takes in the name of the file
+     * @param h        and the hash table
+     */
+    public static void fileReader(String fileName, HashTable3 h) {
+        String line = null;
+        try {
+            java.io.FileReader fileReader =
+                    new java.io.FileReader (fileName);//reading text files
+            BufferedReader bufferedReader =
+                    new BufferedReader (fileReader);//wrapping file reader in a buffer reader
+            while ((line = bufferedReader.readLine ( )) != null) {
+                // System.out.println (line);//reading line by line
+                String[] newArray = line.split (" "); //splitting the word and numbers from the string
+                sNode3 current = h.getArray (newArray);//creating a new hash array
+                h.insert (current);//inserting values into the hash table
+            }
+            bufferedReader.close ( );
+        } catch (FileNotFoundException e) {
+            System.out.println (
+                    "Unable to open file '" + fileName + "'");
+        } catch (IOException e) {
+            System.out.println (
+                    "ERROR: reading file '" + fileName + "'");
+
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+        }
+    }
+
+    /**
+     * This method is to read the lab6Words.txt file for method number 2
+     *
+     * @param fileName name of the file
+     * @param h        the hash table
+     */
+    public static String[] wordsLab(String fileName, HashTable3 h) {
+
+        String line = null;
+        int count = 0;
+        int i = 0;
+
+        try {
+            java.io.FileReader fileReader =
+                    new java.io.FileReader (fileName);
+            BufferedReader bufferedReader =
+                    new BufferedReader (fileReader);
+
+            while ((line = bufferedReader.readLine ( )) != null) {//reading pair file
+                count++;
+            }
+            String[] newArray = new String[count];
+            java.io.FileReader file = new java.io.FileReader (fileName);
+            BufferedReader buff = new BufferedReader (file);
+            while ((line = buff.readLine ( )) != null) {//reading line by line
+                newArray[i] = line;
+                i++;
+            }
+
+            for (int k = 0; k < newArray.length; k++) {
+                //System.out.println (newArray[k]);
+            }
+            bufferedReader.close ( );
+            buff.close ( );
+
+            return newArray;
+        } catch (FileNotFoundException e) {
+            System.out.println (
+                    "Unable to open file: '" + fileName + "'");
+        } catch (IOException e) {
+            System.out.println (
+                    "ERROR: reading file '" + fileName + "'");
+        } catch (NullPointerException e) {
+            System.out.println ("abcERROR: null pointer exception try new length for hash table test.");
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+        }
+        return null;
+    }
+
+    /**
+     * This method is to help calculate the similarity of the words
+     *
+     * @param str1 is the first word
+     * @param str2 is the second word
+     * @param h    is the hash table
+     * @return the result of calculating this cosine distance
+     */
+    public static double similarity(String str1, String str2, HashTable3 h) {//getting the similarity
+        try {
+            sNode3 a = h.search (str1);// e0 embedding
+            sNode3 b = h.search (str2);//e1 embedding
+            double dotProd = getDotProduct (a.embedding, b.embedding);//getting the dot product
+            double getMag = getMagnitude (a.embedding) * getMagnitude (b.embedding);//getting the magnitude
+            double result = dotProd / getMag;//then dividing them to get the similarity of the word
+            return result;
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+            return -1;
+        } catch (InputMismatchException e) {
+            System.out.println ("The input entered is wrong please, try again.");
+            return -1;
+        }
+    }
+
+    /**
+     * This method is to get the dot product for number 2 equation the cosine distance.
+     *
+     * @param a the array of double e0
+     * @param b the array of double e1
+     * @return returns the sum of the two arrays
+     */
+    public static double getDotProduct(double[] a, double[] b) {//getting the dot product
+        double sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += a[i] * b[i];
+        }
+        return sum;
+    }
+
+    /**
+     * This method is to get the bottom half of the cosine distance formula.
+     *
+     * @param a the array of double
+     * @return the absolute value of the sum of the double array
+     */
+    public static double getMagnitude(double[] a) {//getting the magnitude
+        float sum = 0;
+        for (int i = 0; i < a.length; i++) {
+            sum += Math.pow (a[i], 2);
+        }
+        return (float) Math.sqrt (sum);//square root of sum
+    }
+}
+
+package Pena_Lorianne_Lab7;
+
+/**
+ * Created by LoriPena on 4/18/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class graphNode {//Adjacency list
+    int dest;
+    int cost;//set to 1 if graph is unweighted
+    graphNode next;
+
+    public graphNode(int dest, int cost, graphNode next) {
+        this.dest = dest;
+        this.cost = cost;
+        this.next = next;
+    }
+
+    public graphNode(int dest, graphNode next) {
+        this.dest = dest;
+        this.cost = 1;
+        this.next = next;
+    }
+}
+
+package Pena_Lorianne_Lab7;
+
+/**
+ * Created by LoriPena on 4/16/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class HashTable3 {
+
+    private sNode3[] H;
+
+    /**
+     * This method is creating a hash table
+     *
+     * @param n is the size of the hash table
+     */
+    public HashTable3(int n) {
+        H = new sNode3[n];
+        for (int i = 0; i < n; i++) {
+            H[i] = null;
+        }
+
+    }
+
+    /**
+     * This method is to get the length of the hash table
+     *
+     * @return the length of the hash table
+     */
+    public int getLength() {
+        return H.length;
+    }
+
+    /**
+     * This is the method inserts the linked list nodes and data into the hash table also doubles
+     * the size of the load factor once it becomes greater then the desired load size.
+     *
+     * @param s is the linked list node
+     */
+    public void insert(sNode3 s) {//insertion
+        try {
+            float loadFactor = load_factor ( );
+            if (loadFactor > 10) doubleSize ( );//6 is lowest double the size of load factor if it reaches greater
+            int position = hash (s.word);//hash
+            s.next = H[position];
+            H[position] = s;
+            //System.out.println (load_factor () );
+        } catch (NullPointerException e) {
+            System.out.println ("ERROR: null pointer exception try new length for hash table test.");
+        }
+    }
+
+    /**
+     * This method is creating the array part of the hash table
+     *
+     * @param array is the string array needed to create the array part of the hash
+     * @return we return a array ready to take in linked list and start at null
+     */
+    public static sNode3 getArray(String[] array) {//create Snode
+
+        double[] newFloat = new double[50];
+        for (int i = 1; i < array.length; i++) {
+            newFloat[i - 1] = Double.parseDouble (array[i]);
+        }
+        return new sNode3 (array[0], newFloat, null);//nodes
+    }
+
+    /**
+     * This method is to create the actual hash table from the strings given to us in the file
+     *
+     * @param str this is the strings passed from the file
+     * @return the mod operation to decide where to put the value in what index of the array
+     */
+    public int hash(String str) {//creating the actual hash table
+        char[] strToChar = str.toCharArray ( );
+        int result = 0;
+        for (int i = 0; i < strToChar.length; i++) {
+            result += Character.getNumericValue (strToChar[i]);//using numeric value of the words to index
+        }
+        // System.out.println (Math.abs (result%H.length) );
+        return Math.abs (result % H.length);//get rid of negatives
+    }
+
+    /**
+     * This method is used to get the load factor of the hash table in order to decide when the table is to
+     * full and should increase the size of the table
+     *
+     * @return the number of the load factor to use for insert method
+     */
+    public float load_factor() {//computes the load factor
+        int count = 0;
+        for (int i = 0; i < H.length; i++) {
+            for (sNode3 t = H[i]; t != null; t = t.next) {
+                count++;
+            }
+        }
+        return (float) count / H.length;
+    }
+
+    /**
+     * This method is used to double the size of the table once the load factor reaches full
+     * capacity. Also used in the insert method.
+     */
+    public void doubleSize() {//doubling the size of the load factor
+        HashTable3 doubleHash = new HashTable3 ((H.length * 2) + 1);
+        for (int i = 0; i < doubleHash.H.length; i++) {
+            sNode3 temp = doubleHash.H[i];
+            while (temp != null) {
+                doubleHash.insert (temp);
+                temp = temp.next;
+            }
+        }
+        H = doubleHash.H;
+    }
+
+    /**
+     * This method is to search through the hash table and linked lists. Used for the simplicity method.
+     *
+     * @param k takes in a string k which is the position or word index in the hash array
+     * @return returns the index or in this case the string word or null if the list is empty
+     */
+    public sNode3 search(String k) {//searching through the hash table
+        int pos = hash (k);//hash
+        for (sNode3 t = H[pos]; t != null; t = t.next)
+            if (k.equals (t.word))
+                return t;
+        return null;
+    }
+}
+package Pena_Lorianne_Lab7;
+
+/**
+ * Created by LoriPena on 4/16/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class sNode3 {
+    public String word;
+    public double[] embedding;
+    public sNode3 next;
+
+    public sNode3(String S, double[] E, sNode3 N) {
+        word = S;
+        embedding = new double[50];
+        for (int i = 0; i < 50; i++)
+            embedding[i] = E[i];
+        next = N;
+    }
+}
+package Pena_Lorianne_Lab7;
+
+import java.util.*;
+
+/**
+ * Created by LoriPena on 4/16/18.
+ * Lorianne Pena
+ * CS 2302 Spring 2018
+ * Lab 7
+ */
+public class MSTMain {
+    public static int edgeNodeSize;
+
+    /**
+     * This method is to get the new edge list from the hash table and the string array from the file reader
+     *
+     * @param str the string array we get from the file reader
+     * @param h   the hash table we build from the file reader
+     * @return return that information in a edge node.
+     */
+    public static edgeNode newEdgeList(String[] str, HashTable3 h) {
+        edgeNode G = null;
+        for (int i = 0; i < str.length - 1; i++) {
+            for (int j = i + 1; j < str.length; j++) {
+                G = new edgeNode (str[i], str[j], FileReader.similarity (str[i], str[j], h), G);
+            }
+        }
+        return G;
+    }
+
+
+    /**
+     * This method is to compare the similarities for sorting in the get array method
+     */
+    public static class similarityComparator implements Comparator<edgeNode> {//comparing the edge nodes
+
+        public int compare(edgeNode i, edgeNode j) {
+            if (i.cost < j.cost) {
+                return -1;
+            }
+            if (i.cost > j.cost) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    /**
+     * This method is to get the reference of the edge node head and create a array list of edge nodes to help us in
+     * sorting the list for use in Kruskal's algorithm and we return the new head of the array list of edge nodes.
+     *
+     * @param G the reference to the edge node.
+     * @return the reference to the head of the edge node array list.
+     */
+    public static edgeNode getArray(edgeNode G) {
+
+        ArrayList<edgeNode> newArrayL = new ArrayList<> ( );
+        for (edgeNode t = G; t != null; t = t.next) {
+            newArrayL.add (t);
+        }
+        Collections.sort (newArrayL, new similarityComparator ( ));
+
+        for (int i = 0; i < newArrayL.size ( ); i++) {
+            edgeNodeSize++;
+            if (i < newArrayL.size ( ) - 1) {
+                newArrayL.get (i).next = newArrayL.get (i + 1);
+            } else {
+                newArrayL.get (i).next = null;
+            }
+        }
+        return newArrayL.get (0);
+
+    }
+
+    /**
+     * This method is to bring everything together to give us the minimum spanning tree using edge nodes and Kruskal's
+     * algorithm
+     *
+     * @param forest is disjoint forest set object
+     * @param g      the reference to the head of the edge node
+     * @return the edge list of the minimum spanning tree.
+     */
+    public static edgeNode kruskalMST(DSF1 forest, edgeNode g) {
+        edgeNode MST = null;
+        edgeNode newEdge = getArray (g);
+        ArrayList<DSFNode1> newForest = new ArrayList<> ( );
+        for (int i = 0; i < newForest.size ( ); i++) {
+            int temp = forest.getS ( )[i];
+            newForest.add (new DSFNode1 (i, temp));
+            for (edgeNode t = newEdge; t != null; t = t.next) {
+                if (forest.union (temp, i) == 1) {
+                    MST = new edgeNode (t.source, t.dest, t.cost, MST);
+                }
+            }
+        }
+        return MST;
+    }
+
+    /**
+     * This method is to print the edge list before and after Kruskal's algorithm
+     *
+     * @param E is the reference to the edge node head
+     */
+    public static void printGraphEL(edgeNode E) {
+        System.out.print ("G: ");
+        for (edgeNode t = E; t != null; t = t.next) {
+            System.out.print ("(" + t.source + "," + t.dest + "," + t.cost + ")");
+        }
+        System.out.println ( );
+    }
+
+    /**
+     * This method is used to draw the graph taking a adjacency list representation
+     *
+     * @param G         is the adjacency list or the graph node object
+     * @param rad       is the radius of our "invisible circle"
+     * @param halfScale is half the scale of the "grid" we are using to print our graph
+     */
+
+    public static void drawG(graphNode[] G, int rad, int halfScale) {
+        double[] xArray = new double[G.length];
+        double[] yArray = new double[G.length];
+
+        for (int i = 0; i < G.length; i++) {
+            double angle = ((Math.PI * 2) / G.length);
+            double x = (halfScale+ rad * Math.cos (angle * i));//polar to cartesian coordinates conversion for x
+            double y = (halfScale+ rad * Math.sin (angle * i));//polar to cartesian coordinates conversion for y
+            xArray[i] = x;
+            yArray[i] = y;
+        }
+        for (int a = 0; a < G.length; a++) {
+            for (graphNode t = G[a]; t != null; t = t.next) {
+                StdDraw4.line (xArray[a], yArray[a], xArray[t.dest], yArray[t.dest]);
+            }
+        }
+        for (int k = 0; k < G.length; k++) {
+            StdDraw4.setPenColor (StdDraw4.WHITE);
+            StdDraw4.filledCircle (xArray[k], yArray[k], 3);
+            StdDraw4.setPenColor (StdDraw4.BLACK);
+            StdDraw4.circle (xArray[k], yArray[k], 3);
+            StdDraw4.text (xArray[k], yArray[k], Integer.toString (k));
+        }
+
+    }
+
+    public static void main(String[] args) {
+        int x_max = 100;
+        int y_max = 100;
+
+        System.out.println ("Hello please enter 1 for part 1 or enter 2 for part 2");
+        Scanner input = new Scanner (System.in);
+        int option = 0;
+        if (option <= 2) {
+            option = input.nextInt ( );
+            switch (option) {
+                case 1:
+                    System.out.println ("How many number of vertices would you like to enter.");
+                    int result = input.nextInt ( );
+                    StdDraw4.setXscale (0, x_max);
+                    StdDraw4.setYscale (0, y_max);
+                    StdDraw4.setPenColor (StdDraw4.BLACK);
+                    graphNode[] g = new graphNode[result];
+                    for (int i = 0; i < g.length; i++) {
+                        g[i] = null;
+                        for (int j = 0; j < g.length; j++) {
+                            g[i] = new graphNode ((i + j) % result, g[i]);
+                        }
+                    }
+                    drawG (g, 45, 50);
+                    break;
+                case 2:
+                    HashTable3 test = new HashTable3 (23);//5 with test2
+                    FileReader.fileReader ("test2.txt", test);
+                    String[] store = (FileReader.wordsLab ("pair3.txt", test));
+                    edgeNode G = newEdgeList (store, test);
+                    System.out.println (" Pre-Kruskal's Algorithm:  ");
+                    printGraphEL (G);
+                    System.out.println (" ");
+                    System.out.println ("After Kruskal's Algorithm: ");
+                    DSF1 forest = new DSF1 (store.length);
+                    kruskalMST (forest, G);
+                    printGraphEL (G);
+                    break;
+                default:
+                    System.out.println ("I am sorry please try again.");
+
+            }
+        }
+    }
+}
